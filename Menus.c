@@ -36,12 +36,49 @@ flow_flags_t ReadTerminals(void)
 
 void ChooseStage(terminal_t terminal)
 {
-
+	switch(g_actual_status[terminal].stage)
+	{
+	case MAIN_MENU:
+		Start_Menu(terminal);
+		break;
+	case CHOOSE_OPT:
+		//If the ASCII code is between 48 and 57 (numbers), convert to the real number
+		if((ASCII_0 <= read_data[terminal]) && (ASCII_9 >= read_data[terminal]))
+		{
+			Print_On_Terminal(terminal,&read_data[terminal],1);
+			g_actual_status[terminal].submenu = read_data[terminal] - ASCII_0;
+		}
+	case SUBMENU:
+	case SUBMENU_OUT:
+		ChooseSubmenu(terminal);
+		break;
+	default:
+		break;
+	}
 }
 
 void ChooseSubmenu(terminal_t terminal)
 {
-
+	switch(g_actual_status[terminal].submenu){
+	case SET_TIME:
+	case SET_DATE:
+	case READ_TIME:
+	case READ_DATE:
+		TimeDate_Menu(terminal);
+		break;
+	case WRITE_MEM:
+	case READ_MEM:
+		Memory_Menu(terminal);
+		break;
+	case CHAT:
+		Chat_Menu(terminal);
+		break;
+	case LED_MATRIX:
+		//Led_Matrix(terminal); //We didn't reach to do this part, just a few things, basically, this just don't work
+		break;
+	default:
+		break;
+	}
 }
 
 void Start_Menu(terminal_t terminal)
