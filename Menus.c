@@ -26,12 +26,39 @@ uint8_t MainMenu[] = "\r\n1) Establecer Hora\r\n2) Establecer Fecha\r\n3) Leer h
 
 uint8_t ConfigureAll(void)
 {
-
+	uint8_t status_rtc = NOTHING;
+	uint8_t status_mem = NOTHING;
+	uint8_t status_led = NOTHING;
+	UART_PC_configure_port();
+	HC05_configure_port();
+	status_rtc = RTC_config();
+	status_mem = EEPROM_config();
+	status_led = Led_Matrix_config(LED_MATRIX_SLAVE_ADDR);
+	return(status_rtc & status_mem & status_led);
 }
 
 flow_flags_t ReadTerminals(void)
 {
+	flow_flags_t flow_flag = {false, false};
+	read_data[PC] = ASCII_NULL;
+	read_data[HC05] = ASCII_NULL;
+	UART_PC_read(&read_data[PC],ONE_LENGHT);
+	HC05_read(&read_data[HC05],ONE_LENGHT);
+	delay_PIT(PIT_0, DELAY_READING);
 
+	if((MAIN_MENU == g_actual_status[PC].stage) | (UART_PC_get_flag()) | g_actual_status[PC].continue_flow)
+	{
+		flow_flag.t1_flag = true;
+	}
+
+	if((MAIN_MENU == g_actual_status[HC05].stage) | (HC05_get_flag()) | g_actual_status[HC05].continue_flow)
+	{
+		flow_flag.t2_flag = true;
+	}
+
+	UART_PC_clear_flag();
+	HC05_clear_flag();
+	return(flow_flag);
 }
 
 void ChooseStage(terminal_t terminal)
