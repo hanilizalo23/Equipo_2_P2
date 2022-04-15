@@ -29,6 +29,12 @@
 //Masks and shifts to transform
 #define ST_MASK						0x80U
 #define TEN_SHIFT					4U
+#define TEN_MASK					0x70
+#define ONE_MASK					0xF
+#define TEN_MASK_HR					0x30
+#define TEN_VALUE					10U
+
+#define TEN_DATE_MASK				0x30U
 
 
 //Enumerations
@@ -54,6 +60,20 @@ typedef enum{
 	PM
 }time_am_pm_t;
 
+typedef enum{
+	TWENTY_FOUR,
+	TWELVE
+}time_format_t;
+
+//New type of data (structures)
+//To store time
+typedef struct
+{
+	uint8_t sec;
+	uint8_t min;
+	uint8_t hour;
+	uint8_t format;
+}time_store_t;
 
 
 /*!
@@ -75,5 +95,18 @@ uint8_t RTC_verify_communication(void);
  	 \return time read
  */
 time_store_t RTCLOCK_read_time(void);
-
+/*!
+ 	 \brief	 This function converts the time on the format needed to be stored on the RTC to normal
+ 	 	 	 	(decimal).
+ 	 \param[in]  real_time = variable where the time on RTC format is stored
+ 	 \return the conversion
+ */
+time_store_t RTCLOCK_bits_to_time(time_store_t rtc_time);
+/*!
+ 	 \brief	 This function converts a type time_store_t to an array with the time digits.
+ 	 \param[in]  time = variable that stores the time, new_time = array where the digits' values
+ 	 	 	 	 will be stored.
+ 	 \return void.
+ */
+void Time_to_array(time_store_t time,uint8_t* new_time);
 #endif /* MCP7940M_H_ */

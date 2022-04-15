@@ -55,3 +55,39 @@ uint8_t RTC_verify_communication(void)
 	return(status);
 }
 
+time_store_t RTCLOCK_read_time(void)
+{
+	uint8_t temp_read_data;
+	time_store_t read_time;
+	//Read seconds from RTC
+	I2C_read(RTC_ADDRESS,g_address_time[SEC],RTC_SUBA_SIZE,&temp_read_data,RTC_DATA_SIZE);
+	//Store
+	read_time.sec = temp_read_data;
+	//Read minutes from RTC
+	I2C_read(RTC_ADDRESS,g_address_time[MIN],RTC_SUBA_SIZE,&temp_read_data,RTC_DATA_SIZE);
+	//Store
+	read_time.min = temp_read_data;
+	//Read hours from RTC
+	I2C_read(RTC_ADDRESS,g_address_time[HOURS],RTC_SUBA_SIZE,&temp_read_data,RTC_DATA_SIZE);
+	//Store
+	read_time.hour= temp_read_data;
+	//Convert to real value
+	read_time = RTCLOCK_bits_to_time(read_time);
+	return(read_time);
+}
+
+time_store_t RTCLOCK_bits_to_time(time_store_t rtc_time)
+{
+}
+
+
+void Time_to_array(time_store_t time, uint8_t* new_time)
+{
+	new_time[0] = time.hour / TEN_VALUE;
+	new_time[1] = time.hour - (new_time[0] * TEN_VALUE);
+	new_time[2] = time.min / TEN_VALUE;
+	new_time[3] = time.min - (new_time[2] * TEN_VALUE);
+	new_time[4] = time.sec / TEN_VALUE;
+	new_time[5] = time.sec - (new_time[4] * TEN_VALUE);
+}
+
