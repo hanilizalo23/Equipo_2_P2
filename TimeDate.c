@@ -31,13 +31,26 @@ static uint8_t g_time_dig_counter;
 static uint8_t g_date_dig_counter;
 static uint8_t g_temp_time[TIME_TOTAL_DIGS];
 static uint8_t g_temp_date[TIME_TOTAL_DIGS];
+static time_store_t g_real_time;
+static time_store_t g_last_time;
 
+
+//Strings for messages
 uint8_t SetT1 [] = "\r\nEscribir hora en hh:mm:ss\r\n";
 uint8_t SetT2 [] = "\r\nLa hora ha sido cambiada...\r\n";
 uint8_t SetD1 [] = "\r\nEscribir fecha en dd/mm/aa:\r\n";
 uint8_t SetD2 [] = "\r\nLa fecha ha sido cambiada...\r\n";
 uint8_t ReadT [] = "\r\nLa hora actual es:\r\n";
 uint8_t ReadD [] = "\r\nLa fecha actual es:\r\n";
+uint8_t I2C_in_use [] = "\r\nDispositivo en uso por otra terminal\r\n";
+uint8_t I2C_Error [] = "\r\nERROR: No se pudo comunicar con el dispositivo I2C\r\n";
+uint8_t Press_ESC [] = "\r\n\nPresione ESC para salir\r\n";
+uint8_t Time_Error [] = "\r\nIngrese una hora valida: \r\n";
+uint8_t Date_Error [] = "\r\nIngrese una fecha valida: \r\n";
+uint8_t Adjust[] = "\n\n\n";
+uint8_t Move_Cursor_FW [] = "\033[8D";
+uint8_t Move_Cursor_UP [] = "\033[3A";
+uint8_t Move_Cursor_DOWN [] = "\033[3B";
 
 //Flags for "I2C device in use"
 static uint8_t g_rtc_in_use = false;
@@ -100,7 +113,33 @@ void SetTime_Start(terminal_t terminal)
 	}
 }
 
+void SetTime_Read(terminal_t terminal)
+{
+	uint8_t real_number;
+	//Only writes numbers and colons if they are on the corresponding place
+	if((ASCII_9 >= g_data_time[terminal]) && (ASCII_0 <= g_data_time[terminal]))
+	{
+		Print_On_Terminal(terminal,&g_data_time[terminal],ONE_LENGHT);
+		real_number = g_data_time[terminal] - ASCII_0;
+		//Save on the variable for time
+		g_temp_time[g_time_dig_counter] = real_number;
+		//Increase counters for both reading and store
+		g_digits_counter_time ++;
+		g_time_dig_counter ++;
+	}
+	else if((ASCII_COLON == g_data_time[terminal]) && ((TWO_DIGITS == g_digits_counter_time) || (FIVE_DIGITS == g_digits_counter_time)))
+	{
+		Print_On_Terminal(terminal,&g_data_time[terminal],ONE_LENGHT);
+		g_digits_counter_time++;
+	}
+	//Verify if the number of digits has reached the limit
+	if(TIME_DIGITS == g_digits_counter_time)
+	{
+		g_status_td[terminal].stage = SUBMENU_OUT;
+	}
+}
 
-
-
+void SetTime_Save(terminal_t terminal)
+{
+	
 }
