@@ -43,7 +43,53 @@ void (*p_chat_hc05_funcs[3])() = {HC05_Chat_Start,HC05_Chat_Transmit,HC05_Chat_E
 
 program_status_t Chat_Choose(terminal_t terminal, program_status_t actual_status, uint8_t *read_data)
 {
+	uint8_t submenu_stage;
+	g_status_chat[terminal] = actual_status;
+	submenu_stage = actual_status.stage - ONE_LENGHT;
+	g_data_chat[terminal] = *read_data;
+	if(PC == terminal)
+	{
+		p_chat_pc_funcs[submenu_stage]();
+	}
+	else
+	{
+		p_chat_hc05_funcs[submenu_stage]();
+	}
+	return(g_status_chat[terminal]);
+}
 
+//Chat
+void PC_Chat_Start(void)
+{
+	//If the other terminal is connected, then start reading
+	g_t_connected[PC] = true;
+	if(g_t_connected[HC05])
+	{
+		g_status_chat[PC].stage = SUBMENU;
+		UART_PC_write(Term2Con,my_sizeof(Term2Con) - ONE_LENGHT);
+		UART_PC_write(Chat,my_sizeof(Chat) - ONE_LENGHT);
+		g_status_chat[PC].continue_flow = false;
+		g_chat_message[PC].length = NOTHING;
+	}
+
+	//If the other terminal is not connected, then show message
+	else
+	{
+		//To only print the messages once
+		if(g_first_in[PC])
+		{
+			UART_PC_write(Term2Disc,my_sizeof(Term2Disc) - ONE_LENGHT);
+			UART_PC_write(TermWaiting,my_sizeof(TermWaiting) - ONE_LENGHT);
+			UART_PC_write(Press_ESC1,my_sizeof(Press_ESC1) - ONE_LENGHT);
+			g_first_in[PC] = false;
+			g_status_chat[PC].continue_flow = true;
+		}
+		//If ESC is pressed, then exit
+		if(ASCII_ESC == g_data_chat[PC])
+		{
+			PC_Chat_Exit();
+		}
+	}
 }
 
 void PC_Chat_Transmit(void)
