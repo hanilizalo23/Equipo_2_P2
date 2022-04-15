@@ -107,6 +107,7 @@ void WriteMem_Start(terminal_t terminal)
 }
 void WriteMem_Read(terminal_t terminal)
 {
+
 	switch(g_mem_counter)
 	{
 	case ADDRESS:
@@ -228,6 +229,73 @@ void ReadMem_Start(terminal_t terminal)
 
 void ReadMem_Write(terminal_t terminal)
 {
+	switch(g_mem_counter)
+		{
+		case ADDRESS:
+			if((ASCII_ENTER == g_data_mem[terminal]) && (ADRESS_DIGS_MAX == g_digits_counter))
+			{
+				//Restart digits counter
+				g_digits_counter = NOTHING;
+				//Convert to real address and verify if it is valid
+				g_valid_address = Array_to_address(g_temp_address,&g_real_address);
+				if(g_valid_address)
+				{
+					g_mem_counter = LENGTH;
+					Print_On_Terminal(terminal,ReadM2,my_sizeof(ReadM2) - ONE_LENGHT);
+				}
+				else
+				{
+					Print_On_Terminal(terminal,Mem_Error,my_sizeof(Mem_Error) - ONE_LENGHT);
+				}
+			}
+			else if(ADRESS_DIGS_MAX > g_digits_counter)
+			{
+				//Save value on temporal variable
+				g_temp_address[g_digits_counter] = g_data_mem[terminal];
+				Print_On_Terminal(terminal,&g_data_mem[terminal],ONE_LENGHT);
+				g_digits_counter++;
+			}
+			break;
+
+		case LENGTH:
+			if((ASCII_ENTER == g_data_mem[terminal]) && (DATA_SIZE_DIGS == g_digits_counter))
+			{
+				//Restart digits counter
+				g_digits_counter = NOTHING;
+				//Convert to real number
+				g_valid_address = Array_to_size(g_temp_size_mem,&g_real_data_size);
+				if(g_valid_address)
+				{
+					g_mem_counter = TEXT;
+					Print_On_Terminal(terminal,ReadM3,my_sizeof(ReadM3) - ONE_LENGHT);
+					g_status_mem[terminal].stage = SUBMENU_OUT;
+					//Read from memory
+					transference_mem.address = g_real_address;
+					transference_mem.dataSize = g_real_data_size;
+					transference_mem.data = g_temp_data_mem;
+					EEPROM_read(transference_mem);
+					Print_On_Terminal(terminal,g_temp_data_mem,g_real_data_size);
+					Print_On_Terminal(terminal,Press_ESC0,my_sizeof(Press_ESC0) - ONE_LENGHT);
+				}
+				else
+				{
+					Print_On_Terminal(terminal,Mem_Error1,my_sizeof(Mem_Error1) - ONE_LENGHT);
+				}
+
+			}
+			else if(DATA_SIZE_DIGS > g_digits_counter)
+			{
+				//Save value
+				Print_On_Terminal(terminal,&g_data_mem[terminal],ONE_LENGHT);
+				g_temp_size_mem[g_digits_counter] = g_data_mem[terminal];
+				g_digits_counter++;
+			}
+			break;
+
+		default:
+			break;
+		}
+
 }
 
 void ReadMem_Exit(terminal_t terminal)
