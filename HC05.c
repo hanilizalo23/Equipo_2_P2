@@ -19,6 +19,11 @@
 #define NOTHING 0U
 #define ONE_LENGHT 1U
 
+uart_handle_t g_uartPCHandle_hc05;
+static size_t g_receivedBytes_hc05;
+static uint8_t g_rxRingBuffer_hc05[RX_RING_HC05_BUFFER_SIZE] = {NOTHING}; /*RX ring buffer*/
+static uart_transfer_t g_rxbuffer_hc05;
+
 //Flag to know when a character has been received
 volatile uint8_t g_rx_flag_hc05 = false;
 
@@ -33,7 +38,27 @@ void HC05_callback(UART_Type *base, uart_handle_t *handle, status_t status, void
 
 void HC05_configure_port(void)
 {
+	uart_config_t uart_config;
 
+	/* Port C Clock Gate Control: Clock enabled */
+	CLOCK_EnableClock(kCLOCK_PortC);
+
+    /* PORTC14 (pin 86) is configured as UART4_RX */
+    PORT_SetPinMux(PORTC, 14U, kPORT_MuxAlt3);
+
+    /* PORTC15 (pin 87) is configured as UART4_TX */
+    PORT_SetPinMux(PORTC, 15U, kPORT_MuxAlt3);
+
+	//Get default configuration for UART
+	UART_GetDefaultConfig(&uart_config);
+	uart_config.baudRate_Bps = BAUD_RATE_HC05;
+	uart_config.enableTx = true;
+	uart_config.enableRx = true;
+
+	//Configure UART
+	UART_Init(UART_HC05, &uart_config, UART_CLK_FREQ_HC05);
+	UART_TransferCreateHandle(UART_HC05, &g_uartPCHandle_hc05, HC05_callback, NULL);
+	UART_TransferStartRingBuffer(UART_HC05, &g_uartPCHandle_hc05, g_rxRingBuffer_hc05, RX_RING_HC05_BUFFER_SIZE);
 }
 
 void HC05_write(uint8_t *data, size_t length)
