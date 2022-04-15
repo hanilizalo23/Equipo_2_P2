@@ -277,7 +277,24 @@ date_store_t RTCLOCK_date_to_bits(date_store_t real_date)
 }
 
 void Date_to_array(date_store_t date, uint8_t* new_date)
-{}
+{
+	new_date[0] = date.day / TEN_VALUE;
+	new_date[1] = date.day - (new_date[0] * TEN_VALUE);
+	new_date[2] = date.month / TEN_VALUE;
+	new_date[3] = date.month - (new_date[2] * TEN_VALUE);
+	new_date[4] = date.year / TEN_VALUE;
+	new_date[5] = date.year - (new_date[4] * TEN_VALUE);
+}
 
 date_store_t Array_to_date(uint8_t date[TIME_TOTAL_DIGS])
-{}
+{
+	date_store_t new_date;
+	//Hours
+	new_date.day = (date[0] * TEN_VALUE) + date[1];
+	//Minutes
+	new_date.month = (date[2] * TEN_VALUE) + date[3];
+	//Seconds
+	new_date.year = (date[4] * TEN_VALUE) + date[5];
+	return(new_date);
+}
+ 
