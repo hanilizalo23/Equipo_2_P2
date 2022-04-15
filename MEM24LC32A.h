@@ -40,7 +40,7 @@ typedef struct
  	 \return true if the k64 had trouble communicating with the EEPROM
  */
 uint8_t EEPROM_config(void);
-
+/*!
  	 \brief	 This function writes the specified address of the memory.
  	 \param[in]  transfer buffer, that includes the address, data and data size.
  	 \return true if the k64 had trouble communicating with the EEPROM
@@ -66,13 +66,11 @@ uint8_t Array_to_address(uint8_t *digs_address, uint16_t *real_address);
  	 \return true if the size is valid.
  */
 uint8_t Array_to_size(uint8_t *digs, uint8_t* real_size);
-
 /*!
  	 \brief	 This function reads the first address, in order to make sure it is connected.
  	 \param[in]  void
  	 \return true if the k64 had trouble communicating with the EEPROM
  */
 uint8_t EEPROM_verify_communication(void);
-/*!
 
 #endif /* 24LC256_H_ */

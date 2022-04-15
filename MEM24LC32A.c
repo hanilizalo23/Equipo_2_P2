@@ -117,6 +117,12 @@ uint8_t Array_to_size(uint8_t *digs, uint8_t* real_size)
 	return(status);
 }
 
+
 uint8_t EEPROM_verify_communication(void)
 {
+	uint8_t data, status;
+	eeprom_transfer_t test_data = {0x0000, ONE_LENGHT, &data}; //0000 as verify, not magic numbers
+	//Tries to read the memory to know if it is connected
+	status = EEPROM_read(test_data);
+	return(status);
 }
