@@ -85,10 +85,46 @@ void HC05_clear_flag(void)
 
 void HC05_print_time(time_store_t time)
 {
+	uint8_t time_array[PRINT_DIGS1];
+	uint8_t colon = ASCII_COLON;
+	Time_to_array(time,time_array);
+	//Adjust to ASCII code
+	time_array[0] = time_array[0] + ASCII_0;
+	time_array[1] = time_array[1] + ASCII_0;
+	time_array[2] = time_array[2] + ASCII_0;
+	time_array[3] = time_array[3] + ASCII_0;
+	time_array[4] = time_array[4] + ASCII_0;
+	time_array[5] = time_array[5] + ASCII_0;
 
+	HC05_write(&time_array[0],ONE_LENGHT);
+	HC05_write(&time_array[1],ONE_LENGHT);
+	HC05_write(&colon,ONE_LENGHT);
+	HC05_write(&time_array[2],ONE_LENGHT);
+	HC05_write(&time_array[3],ONE_LENGHT);
+	HC05_write(&colon,ONE_LENGHT);
+	HC05_write(&time_array[4],ONE_LENGHT);
+	HC05_write(&time_array[5],ONE_LENGHT);
 }
 
 void HC05_print_date(date_store_t date)
 {
+	uint8_t date_array[PRINT_DIGS1];
+	uint8_t slash = ASCII_SLASH;
+	Date_to_array(date,date_array);
+	//Adjust to ASCII code
+	date_array[0] = date_array[0] + ASCII_0;
+	date_array[1] = date_array[1] + ASCII_0;
+	date_array[2] = date_array[2] + ASCII_0;
+	date_array[3] = date_array[3] + ASCII_0;
+	date_array[4] = date_array[4] + ASCII_0;
+	date_array[5] = date_array[5] + ASCII_0;
 
+	HC05_write(&date_array[0],ONE_LENGHT);
+	HC05_write(&date_array[1],ONE_LENGHT);
+	HC05_write(&slash,ONE_LENGHT);
+	HC05_write(&date_array[2],ONE_LENGHT);
+	HC05_write(&date_array[3],ONE_LENGHT);
+	HC05_write(&slash,ONE_LENGHT);
+	HC05_write(&date_array[4],ONE_LENGHT);
+	HC05_write(&date_array[5],ONE_LENGHT);
 }
