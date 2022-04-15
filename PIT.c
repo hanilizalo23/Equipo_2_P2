@@ -9,7 +9,6 @@
 #include <stdint.h>
 #include "MK64F12.h"
 #include "PIT.h"
-#include "GPIO.h"
 #include "Bits.h"
 
 #define NOTHING 0U
@@ -244,6 +243,14 @@ void PIT_stop(PIT_timer_t pit_timer) /**Stops the counting of the PIT*/
 
 		default:
 		break;
+	}
+}
+
+void delay_PIT(PIT_timer_t pit, My_float_pit_t delay) /**Little counting*/
+{
+	if(PIT_0 == pit)
+	{
+		for(int i = delay; i > 0; i--){};
 	}
 }
 

@@ -14,6 +14,7 @@
 #include "MK64F12.h"
 
 #define SYSTEM_CLOCK	(21000000U) /**Frequency of the K64 that will work at*/
+#define DELAY_READING   (4850U)     /**Little delay for reading*/
 
 typedef float My_float_pit_t;
 
@@ -128,8 +129,18 @@ void PIT_stop(PIT_timer_t pit_timer);
 
 /********************************************************************************************/
 /*!
-       \brief      This functions contains the ISR for the PIT module
-       \param[in]  void.
+       \brief      It stops the PIT
+
+       \param[in]  The PIT.
+       \return void
+*/
+void delay_PIT(PIT_timer_t pit, My_float_pit_t delay);
+
+/********************************************************************************************/
+/*!
+       \brief      Little delay
+       \param[in]  pit_timer channel to be used.
+       \param[in]  the value of the delay
        \return void
 */
 void PIT0_IRQHandler(void);
