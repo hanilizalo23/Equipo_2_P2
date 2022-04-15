@@ -94,12 +94,62 @@ void PC_Chat_Start(void)
 
 void PC_Chat_Transmit(void)
 {
+	//If ESC, print in both terminals "Terminal 1:"
+	//Go to next stage
+	//Else store message
+	if(ASCII_ENTER == g_data_chat[PC])
+	{
+		//Print messages in both terminals
+		UART_PC_write(Allignment,my_sizeof(Allignment) - ONE_LENGHT);
+		UART_PC_write(Term1,my_sizeof(Term1) - ONE_LENGHT);
+		UART_PC_write(Allignment,my_sizeof(Allignment) - ONE_LENGHT);
+		UART_PC_write(g_chat_message[PC].text,g_chat_message[PC].length);
 
+		HC05_write(Allignment0,my_sizeof(Allignment0) - ONE_LENGHT);
+		HC05_write(Term1,my_sizeof(Term1) - ONE_LENGHT);
+		HC05_write(Allignment0,my_sizeof(Allignment0) - ONE_LENGHT);
+		HC05_write(g_chat_message[PC].text,g_chat_message[PC].length);
+		g_status_chat[PC].stage = SUBMENU_OUT;
+		g_chat_message[PC].length = NOTHING;
+		PC_Chat_Exit();
+	}
+
+	else
+	{
+		if(0 == g_chat_message[PC].length)
+		{
+			UART_PC_write(Message,my_sizeof(Message) - ONE_LENGHT);
+		}
+		g_chat_message[PC].text[g_chat_message[PC].length] = g_data_chat[PC];
+		UART_PC_write(&g_chat_message[PC].text[g_chat_message[PC].length],ONE_LENGHT);
+		g_chat_message[PC].length ++;
+		PC_Chat_Exit();
+	}
 }
 
 void PC_Chat_Exit(void)
 {
+	//Only if ESC is pressed, exit
+	if(ASCII_ESC == g_data_chat[PC])
+	{
+		//Once the process ends, the global variables must return to the original value
+		g_status_chat[PC].stage = MAIN_MENU;
+		g_status_chat[PC].submenu = NONE;
+		g_t_connected[PC] = false;
 
+		if(g_t_connected[HC05])
+		{
+			//print "Terminal 1 se desconectó"
+			HC05_write(Term1Disc,my_sizeof(Term1Disc) - ONE_LENGHT);
+		}
+		g_first_in[PC] = true;
+	}
+
+	else
+	{
+		//Go back to reading
+		g_status_chat[PC].stage = SUBMENU;
+	}
 }
 
 //Bluetooth

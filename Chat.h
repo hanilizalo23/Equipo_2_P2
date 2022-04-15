@@ -11,6 +11,7 @@
 #ifndef CHAT_H_
 #define CHAT_H_
 
+#include "Menus.h"
 #include "MK64F12.h"
 
 #define MAX_TEXT_CHAT	(100U)
