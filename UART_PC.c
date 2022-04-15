@@ -21,6 +21,10 @@
 #define UART0_RX_PIN	(16U)
 #define UART0_TX_PIN	(17U)
 
+uart_handle_t g_uartPCHandle;
+static size_t g_receivedBytes;
+static uint8_t g_rxRingBuffer[RX_RING_BUFFER_SIZE] = {NOTHING}; /* RX ring buffer. */
+static uart_transfer_t g_rxbuffer;
 
 //Flag to know when a character has been received
 volatile uint8_t g_rx_flag = false;
@@ -39,7 +43,27 @@ void UART_PC_callback(UART_Type *base, uart_handle_t *handle, status_t status, v
 
 void UART_PC_configure_port(void)
 {
+	uart_config_t uart_config;
 
+	/* Port B Clock Gate Control: Clock enabled */
+	CLOCK_EnableClock(kCLOCK_PortB);
+
+	/* PORTB16 (pin 62) is configured as UART0_RX */
+	PORT_SetPinMux(PORTB, UART0_RX_PIN, kPORT_MuxAlt3);
+
+	/* PORTB17 (pin 63) is configured as UART0_TX */
+	PORT_SetPinMux(PORTB, UART0_TX_PIN, kPORT_MuxAlt3);
+
+	//Get default configuration for UART
+	UART_GetDefaultConfig(&uart_config);
+	uart_config.baudRate_Bps = BAUD_RATE_PC;
+	uart_config.enableTx = true;
+	uart_config.enableRx = true;
+
+	//Configure UART
+	UART_Init(UART_PC, &uart_config, UART_CLK_FREQ_PC);
+	UART_TransferCreateHandle(UART_PC, &g_uartPCHandle, UART_PC_callback, NULL);
+	UART_TransferStartRingBuffer(UART_PC, &g_uartPCHandle, g_rxRingBuffer, RX_RING_BUFFER_SIZE);
 }
 
 void UART_PC_write(uint8_t *data, size_t length)
