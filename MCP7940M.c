@@ -161,6 +161,21 @@ time_store_t RTCLOCK_time_to_bits(time_store_t real_time)
 	return(rtc_time);
 }
 
+time_store_t Array_to_time(uint8_t time[TIME_TOTAL_DIGS])
+{
+	uint8_t seconds, minutes, hours;
+	time_store_t new_time;
+	//Hours
+	hours = (time[0] * TEN_VALUE) + time[1];
+	//Minutes
+	minutes = (time[2] * TEN_VALUE) + time[3];
+	//Seconds
+	seconds = (time[4] * TEN_VALUE) + time[5];
+	new_time.hour = hours;
+	new_time.min = minutes;
+	new_time.sec = seconds;
+	return(new_time);
+}
 
 void Time_to_array(time_store_t time, uint8_t* new_time)
 {
@@ -244,8 +259,25 @@ uint8_t RTCLOCK_write_date(date_store_t new_date)
 
 date_store_t RTCLOCK_date_to_bits(date_store_t real_date)
 {
+	uint8_t ten, one;
+	date_store_t rtc_date;
+	//Change tens and units to the format
+	ten = real_date.day / TEN_VALUE;
+	one = real_date.day - (ten * TEN_VALUE);
+	rtc_date.day = ((ten << TEN_SHIFT) & TEN_DATE_MASK) | (one & ONE_MASK);
+	//Change tens and units to the format
+	ten = real_date.month / TEN_VALUE;
+	one = real_date.month - (ten * TEN_VALUE);
+	rtc_date.month = (((ten << TEN_SHIFT) & TEN_MTH_MASK) | (one & ONE_MASK));
+	//Change tens and units to the format
+	ten = real_date.year / TEN_VALUE;
+	one = real_date.year - (ten * TEN_VALUE);
+	rtc_date.year = (((ten << TEN_SHIFT) & TEN_YEAR_MASK) | (one & ONE_MASK)) ;
+	return(rtc_date);
 }
 
+void Date_to_array(date_store_t date, uint8_t* new_date)
+{}
 
-
-
+date_store_t Array_to_date(uint8_t date[TIME_TOTAL_DIGS])
+{}

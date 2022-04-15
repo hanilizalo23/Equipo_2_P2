@@ -156,4 +156,23 @@ date_store_t RTCLOCK_bits_to_date(date_store_t rtc_date);
  	 \return void.
  */
 void Time_to_array(time_store_t time,uint8_t* new_time);
+/*!
+ 	 \brief	 This function converts a type date_store_t to an array with the date digits.
+ 	 \param[in]  date = variable that stores the time, new_time = array where the digits' values
+ 	 	 	 	 will be stored.
+ 	 \return void.
+ */
+void Date_to_array(date_store_t date,uint8_t* new_date);
+/*!
+ 	 \brief	 This function converts an array with the time digits to a type time_store_t.
+ 	 \param[in]  time = array that stores the digits values.
+ 	 \return time on the special variable.
+ */
+time_store_t Array_to_time(uint8_t time[TIME_TOTAL_DIGS]);
+/*!
+ 	 \brief	 This function converts an array with the date digits to a type date_store_t.
+ 	 \param[in]  date = array that stores the digits values.
+ 	 \return date on the special variable.
+ */
+date_store_t Array_to_date(uint8_t date[TIME_TOTAL_DIGS]);
 #endif /* MCP7940M_H_ */
