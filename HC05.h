@@ -12,6 +12,7 @@
 #define HC05_H_
 
 #include "fsl_uart.h"
+#include "MCP7940M.h"
 #include "Menus.h"
 
 //Macros for configuration
