@@ -160,6 +160,8 @@ time_store_t RTCLOCK_time_to_bits(time_store_t real_time)
 	rtc_time.format = real_time.format;
 	return(rtc_time);
 }
+
+
 void Time_to_array(time_store_t time, uint8_t* new_time)
 {
 	new_time[0] = time.hour / TEN_VALUE;
@@ -170,7 +172,45 @@ void Time_to_array(time_store_t time, uint8_t* new_time)
 	new_time[5] = time.sec - (new_time[4] * TEN_VALUE);
 }
 
+date_store_t RTCLOCK_read_date(void)
+{
+	uint8_t temp_read_data;
+	date_store_t read_date;
+	//Read the day from RTC
+	I2C_read(RTC_ADDRESS,g_address_date[DAY],RTC_SUBA_SIZE,&temp_read_data,RTC_DATA_SIZE);
+	//Store
+	read_date.day = temp_read_data;
+	//Read the month from RTC
+	I2C_read(RTC_ADDRESS,g_address_date[MONTH],RTC_SUBA_SIZE,&temp_read_data,RTC_DATA_SIZE);
+	//Store
+	read_date.month = temp_read_data;
+	//Read the year from RTC
+	I2C_read(RTC_ADDRESS,g_address_date[YEAR],RTC_SUBA_SIZE,&temp_read_data,RTC_DATA_SIZE);
+	//Store
+	read_date.year = temp_read_data;
+	//Convert to real value
+	read_date = RTCLOCK_bits_to_date(read_date);
+	return(read_date);
+}
 
+date_store_t RTCLOCK_bits_to_date(date_store_t rtc_date)
+{
+	uint8_t ten, one;
+	date_store_t real_date;
+	//Obtain tens and units for day
+	ten = ((rtc_date.day & TEN_DATE_MASK) >> TEN_SHIFT);
+	one = rtc_date.day & ONE_MASK;
+	real_date.day = (ten * TEN_VALUE) + one;
+	//Obtain tens and units for month
+	ten = ((rtc_date.month & TEN_MTH_MASK) >> TEN_SHIFT);
+	one = rtc_date.month & ONE_MASK;
+	real_date.month = (ten * TEN_VALUE) + one;
+	//Obtain tens and units for year
+	ten = ((rtc_date.year & TEN_YEAR_MASK) >> TEN_SHIFT);
+	one = rtc_date.year & ONE_MASK;
+	real_date.year = (ten * TEN_VALUE) + one;
+	return(real_date);
+}
 
 uint8_t RTCLOCK_write_date(date_store_t new_date)
 {
@@ -201,5 +241,11 @@ uint8_t RTCLOCK_write_date(date_store_t new_date)
 
 	return(status);
 }
+
+date_store_t RTCLOCK_date_to_bits(date_store_t real_date)
+{
+}
+
+
 
 
