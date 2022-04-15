@@ -36,7 +36,6 @@ uint8_t EEPROM_config(void)
 	return(status);
 }
 
-
 uint8_t EEPROM_write(eeprom_transfer_t transfer)
 {
 	uint8_t status;
@@ -106,4 +105,18 @@ uint8_t Array_to_address(uint8_t *digs_address, uint16_t *real_address)
 	return(status);
 }
 
+uint8_t Array_to_size(uint8_t *digs, uint8_t* real_size)
+{
+	uint8_t status = true;
+	//Verify if it is a real number
+	if((ASCII_0 > digs[0]) || (ASCII_9 < digs[0]) || (ASCII_0 > digs[1]) || (ASCII_0 > digs[1]))
+	{
+		status = false;
+	}
+	*real_size = ((digs[0] - ASCII_0) * TENS) + (digs[1] - ASCII_0);
+	return(status);
+}
 
+uint8_t EEPROM_verify_communication(void)
+{
+}
