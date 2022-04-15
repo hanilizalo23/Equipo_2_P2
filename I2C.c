@@ -66,3 +66,31 @@ void I2C_config(void)
 
 	I2C_MasterInit(I2C0, &masterConfig, I2C_MASTER_CLK_FREQ);
 }
+
+uint8_t I2C_read(uint8_t dev_address, uint32_t subaddress, uint8_t subaddress_size, uint8_t *data, size_t data_size)
+{
+	uint8_t status;
+	g_master_transfer.direction 		= kI2C_Read;
+	g_master_transfer.flags 			= kI2C_TransferDefaultFlag;
+	g_master_transfer.slaveAddress 		= dev_address;
+	g_master_transfer.subaddress 		= subaddress;
+	g_master_transfer.subaddressSize 	= subaddress_size;
+	g_master_transfer.data 				= data;
+	g_master_transfer.dataSize 			= data_size;
+	status = I2C_MasterTransferBlocking(I2C0, &g_master_transfer);
+	return(status);
+}
+
+uint8_t I2C_write(uint8_t dev_address, uint32_t subaddress, uint8_t subaddress_size, uint8_t *data, size_t data_size)
+{
+	uint8_t status;
+	g_master_transfer.direction 		= kI2C_Write;
+	g_master_transfer.flags 			= kI2C_TransferDefaultFlag;
+	g_master_transfer.slaveAddress 		= dev_address;
+	g_master_transfer.subaddress 		= subaddress;
+	g_master_transfer.subaddressSize 	= subaddress_size;
+	g_master_transfer.data 				= data;
+	g_master_transfer.dataSize 			= data_size;
+	status = I2C_MasterTransferBlocking(I2C0, &g_master_transfer);
+	return(status); 
+}

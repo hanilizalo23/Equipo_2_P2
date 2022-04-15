@@ -22,5 +22,25 @@
  	 \return 	void
  */
 void I2C_config(void);
-
+/*!
+ 	 \brief	 This function reads data from the address device received with the specifications given.
+ 	 \param[in]  uint8_t dev_address = address of the device
+ 	 	 	 	 uint32_t subaddress = subaddress to read
+ 	 	 	 	 uint8_t subaddress_size = size of the subaddress, in bytes
+ 	 	 	 	 uint8_t *data = pointer to the array where the data will be stored
+ 	 	 	 	 size_t data_size = length of the data to be read (in bytes)
+ 	 \return 	true if the transference was successful
+ */
+uint8_t I2C_read(uint8_t dev_address, uint32_t subaddress, uint8_t subaddress_size, uint8_t *data, size_t data_size);
+/*!
+ 	 \brief	 This function writes data on the address device received with the specifications given.
+ 	 \param[in]  uint8_t dev_address = address of the device
+ 	 	 	 	 uint32_t subaddress = subaddress to write
+ 	 	 	 	 uint8_t subaddress_size = size of the subaddress, in bytes
+ 	 	 	 	 uint8_t *data = pointer to the array where the data is stored
+ 	 	 	 	 size_t data_size = length of the data to write (in bytes)
+ 	 \return 	 true if the transference was successful
+ */
+uint8_t I2C_write(uint8_t dev_address, uint32_t subaddress, uint8_t subaddress_size, uint8_t *data, size_t data_size);
+ 
 #endif /* I2C_H_ */
