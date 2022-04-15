@@ -11,6 +11,9 @@
 #include "Chat.h"
 #include "stdbool.h"
 #include "fsl_uart.h"
+#include "Bits.h"
+#include "HC05.h"
+#include "UART_PC.h"
 #include <stdio.h>
 
 #define NOTHING 0U

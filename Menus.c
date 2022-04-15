@@ -7,9 +7,20 @@
  *      Author: Nelida Hernández
  */
 
+#include <MEM24LC32A.h>
+#include "Menus.h"
 #include "MK64F12.h"
 #include "stdbool.h"
 #include "fsl_uart.h"
+#include "Bits.h"
+#include "MCP7940M.h"
+#include "HC05.h"
+#include "UART_PC.h"
+#include "Memory.h"
+#include "TimeDate.h"
+#include "Chat.h"
+#include "PIT.h"
+#include "HT16K33.h"
 #include <stdio.h>
 
 #define NOTHING 0U
