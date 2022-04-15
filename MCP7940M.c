@@ -140,6 +140,26 @@ uint8_t RTCLOCK_write_time(time_store_t new_time)
 	return(status);
 }
 
+time_store_t RTCLOCK_time_to_bits(time_store_t real_time)
+{
+	uint8_t ten, one;
+	time_store_t rtc_time;
+	//Change tens and units to the format
+	ten = real_time.sec / TEN_VALUE;
+	one = real_time.sec - (ten * TEN_VALUE);
+	rtc_time.sec = (ST_MASK) | ((ten << TEN_SHIFT) & TEN_MASK) | (one & ONE_MASK);
+	//Change tens and units to the format
+	ten = real_time.min / TEN_VALUE;
+	one = real_time.min - (ten * TEN_VALUE);
+	rtc_time.min = (((ten << TEN_SHIFT) & TEN_MASK) | (one & ONE_MASK));
+	//Change tens and units to the format
+	ten = real_time.hour / TEN_VALUE;
+	one = real_time.hour - (ten * TEN_VALUE);
+	rtc_time.hour = (((ten << TEN_SHIFT) & TEN_MASK_HR) | (one & ONE_MASK)) | ((real_time.format << FORMAT_SHIFT) & FORMAT_MASK);
+	//For format
+	rtc_time.format = real_time.format;
+	return(rtc_time);
+}
 void Time_to_array(time_store_t time, uint8_t* new_time)
 {
 	new_time[0] = time.hour / TEN_VALUE;
@@ -154,6 +174,32 @@ void Time_to_array(time_store_t time, uint8_t* new_time)
 
 uint8_t RTCLOCK_write_date(date_store_t new_date)
 {
+	date_store_t stored_date;
+	uint8_t temp_data;
+	uint8_t status = true;
+	//Verify if it is a valid DATE
+	if((DATE_MAX_DAYS < new_date.day) | (DATE_MIN == new_date.day) | (DATE_MAX_MTH < new_date.month) | (DATE_MIN == new_date.month) | (DATE_MAX_YR < new_date.year))
+	{
+		status = false;
+	}
+	if(status)
+	{
+		stored_date = RTCLOCK_date_to_bits(new_date);
+		//Store on temp. variable
+		temp_data = stored_date.day;
+		//Write date to RTC
+		I2C_write(RTC_ADDRESS,g_address_date[DAY],RTC_SUBA_SIZE,&temp_data,RTC_DATA_SIZE);
+		//Store on temp. variable
+		temp_data = stored_date.month;
+		//Write month to RTC
+		I2C_write(RTC_ADDRESS,g_address_date[MONTH],RTC_SUBA_SIZE,&temp_data,RTC_DATA_SIZE);
+		//Store on temp. variable
+		temp_data = stored_date.year;
+		//Write year to RTC
+		I2C_write(RTC_ADDRESS,g_address_date[YEAR],RTC_SUBA_SIZE,&temp_data,RTC_DATA_SIZE);
+	}
+
+	return(status);
 }
 
 

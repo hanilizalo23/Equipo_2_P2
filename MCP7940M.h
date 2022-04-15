@@ -123,7 +123,6 @@ date_store_t RTCLOCK_read_date(void);
  	 \return true if the date was valid
  */
 uint8_t RTCLOCK_write_date(date_store_t new_date);
-
 /*!
  	 \brief	 This function converts the time on the format needed to be stored on the RTC to normal
  	 	 	 	(decimal).
@@ -132,10 +131,17 @@ uint8_t RTCLOCK_write_date(date_store_t new_date);
  */
 time_store_t RTCLOCK_bits_to_time(time_store_t rtc_time);
 /*!
+ 	 \brief	 This function converts a normal time on the format needed to be stored on the RTC.
+ 	 \param[in]  real_time = variable where the time on decimal is stored
+ 	 \return the conversion
+ */
+time_store_t RTCLOCK_time_to_bits(time_store_t real_time);
+/*!
  	 \brief	 This function converts a type time_store_t to an array with the time digits.
  	 \param[in]  time = variable that stores the time, new_time = array where the digits' values
  	 	 	 	 will be stored.
  	 \return void.
  */
 void Time_to_array(time_store_t time,uint8_t* new_time);
+
 #endif /* MCP7940M_H_ */
