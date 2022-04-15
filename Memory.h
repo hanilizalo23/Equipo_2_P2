@@ -41,5 +41,7 @@ void WriteMem_Exit(terminal_t terminal);
  	 \return void
  */
 void ReadMem_Start(terminal_t terminal);
+void ReadMem_Write(terminal_t terminal);
+void ReadMem_Exit(terminal_t terminal);
 
 #endif /* MEMORY_H_ */

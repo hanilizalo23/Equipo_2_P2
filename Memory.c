@@ -201,9 +201,44 @@ void WriteMem_Exit(terminal_t terminal)
 //Read Memory
 void ReadMem_Start(terminal_t terminal)
 {
-
+	if(g_mem_in_use)
+	{
+		Print_On_Terminal(terminal,I2C_in_use0,my_sizeof(I2C_in_use0) - ONE_LENGHT);
+		g_status_mem[terminal].stage = MAIN_MENU;
+		g_status_mem[terminal].submenu = NONE;
+	}
+	else
+	{
+		if(EEPROM_verify_communication())
+		{
+			Print_On_Terminal(terminal,I2C_Error0,my_sizeof(I2C_Error0) - ONE_LENGHT);
+			g_status_mem[terminal].stage = SUBMENU_OUT;
+		}
+		else
+		{
+			g_mem_counter = ADDRESS;
+			g_mem_in_use = true;
+			//Depending on what must read next, prints a different message
+			Print_On_Terminal(terminal,ReadM1,my_sizeof(ReadM1) - ONE_LENGHT);
+			g_digits_counter = 0;
+			g_status_mem[terminal].stage = SUBMENU;
+		}
+	}
 }
 
+void ReadMem_Write(terminal_t terminal)
+{
+}
 
-
-
+void ReadMem_Exit(terminal_t terminal)
+{
+	//Only if ESC is pressed, exit
+	if(ASCII_ESC == g_data_mem[terminal])
+	{
+		//Once the process ends, the global variables must return to the original value
+		g_status_mem[terminal].stage = MAIN_MENU;
+		g_status_mem[terminal].submenu = NONE;
+		//Free the device
+		g_mem_in_use = false;
+	}
+}
