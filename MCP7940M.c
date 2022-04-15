@@ -78,8 +78,67 @@ time_store_t RTCLOCK_read_time(void)
 
 time_store_t RTCLOCK_bits_to_time(time_store_t rtc_time)
 {
+	uint8_t ten, one;
+	time_store_t real_time;
+	//Obtain tens and units for seconds
+	ten = ((rtc_time.sec & TEN_MASK) >> TEN_SHIFT);
+	one = rtc_time.sec & ONE_MASK;
+	real_time.sec = (ten * TEN_VALUE) + one;
+	//Obtain tens and units for minutes
+	ten = ((rtc_time.min & TEN_MASK) >> TEN_SHIFT);
+	one = rtc_time.min & ONE_MASK;
+	real_time.min = (ten * TEN_VALUE) + one;
+	//Obtain tens and units for hours
+	ten = ((rtc_time.hour & TEN_MASK_HR) >> TEN_SHIFT);
+	one = rtc_time.hour & ONE_MASK;
+	real_time.hour = (ten * TEN_VALUE) + one;
+	//For format
+	real_time.format = ((rtc_time.hour & FORMAT_MASK) >> FORMAT_SHIFT);
+	return(real_time);
 }
 
+uint8_t RTCLOCK_write_time(time_store_t new_time)
+{
+	time_store_t stored_time;
+	uint8_t temp_data;
+	uint8_t status = true;
+	//Verify if it is a valid time
+	if(new_time.format)
+	{
+		//12h format
+		if((TIME_MAX_HR_12 < new_time.hour) | (TIME_MAX_SEC_MIN < new_time.min) | (TIME_MAX_SEC_MIN < new_time.sec))
+		{
+			status = false;
+		}
+	}
+
+	else
+	{
+		//24h format
+		if((TIME_MAX_HR_24 < new_time.hour) | (TIME_MAX_SEC_MIN < new_time.min) | (TIME_MAX_SEC_MIN < new_time.sec))
+		{
+			status = false;
+		}
+	}
+
+	if(status)
+	{
+		stored_time = RTCLOCK_time_to_bits(new_time);
+		//Store on temp. variable
+		temp_data = stored_time.sec;
+		//Write seconds to RTC
+		I2C_write(RTC_ADDRESS,g_address_time[SEC],RTC_SUBA_SIZE,&temp_data,RTC_DATA_SIZE);
+		//Store on temp. variable
+		temp_data = stored_time.min;
+		//Write seconds to RTC
+		I2C_write(RTC_ADDRESS,g_address_time[MIN],RTC_SUBA_SIZE,&temp_data,RTC_DATA_SIZE);
+		//Store on temp. variable
+		temp_data = stored_time.hour;
+		//Write seconds to RTC
+		I2C_write(RTC_ADDRESS,g_address_time[HOURS],RTC_SUBA_SIZE,&temp_data,RTC_DATA_SIZE);
+	}
+	return(status);
+}
 
 void Time_to_array(time_store_t time, uint8_t* new_time)
 {
@@ -90,4 +149,11 @@ void Time_to_array(time_store_t time, uint8_t* new_time)
 	new_time[4] = time.sec / TEN_VALUE;
 	new_time[5] = time.sec - (new_time[4] * TEN_VALUE);
 }
+
+
+
+uint8_t RTCLOCK_write_date(date_store_t new_date)
+{
+}
+
 
