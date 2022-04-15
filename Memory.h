@@ -35,5 +35,11 @@ program_status_t Memory_Choose(terminal_t terminal, program_status_t actual_stat
 void WriteMem_Start(terminal_t terminal);
 void WriteMem_Read(terminal_t terminal);
 void WriteMem_Exit(terminal_t terminal);
+/*!
+ 	 \brief	 This group of functions are the stages of the submenu "Read memory".
+ 	 \param[in]  terminal to use.
+ 	 \return void
+ */
+void ReadMem_Start(terminal_t terminal);
 
 #endif /* MEMORY_H_ */
