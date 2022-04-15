@@ -155,15 +155,93 @@ void PC_Chat_Exit(void)
 //Bluetooth
 void HC05_Chat_Start(void)
 {
+	//If the other terminal is connected, then start reading
+	g_t_connected[HC05] = true;
+	if(g_t_connected[PC])
+	{
+		g_status_chat[HC05].stage = SUBMENU;
+		HC05_write(Term1Con,my_sizeof(Term1Con) - ONE_LENGHT);
+		HC05_write(Chat,my_sizeof(Chat) - ONE_LENGHT);
+		g_status_chat[HC05].continue_flow = false;
+		g_chat_message[HC05].length = NOTHING;
+	}
 
+	//If the other terminal is not connected, then show message
+	else
+	{
+		//To only print the messages once
+		if(g_first_in[HC05])
+		{
+			HC05_write(Term1Disc,my_sizeof(Term1Disc) - ONE_LENGHT);
+			UART_PC_write(TermWaiting,my_sizeof(TermWaiting) - ONE_LENGHT);
+			UART_PC_write(Press_ESC1,my_sizeof(Press_ESC1) - ONE_LENGHT);
+			g_first_in[HC05] = false;
+			g_status_chat[HC05].continue_flow = true;
+		}
+
+		//If ESC is pressed, then exit
+		if(ASCII_ESC == g_data_chat[HC05])
+		{
+			HC05_Chat_Exit();
+		}
+	}
 }
 
 void HC05_Chat_Transmit(void)
 {
+	//If ESC, print in both terminals "Terminal 1:"
+	//Go to next stage
+	//Else store message
+	if(ASCII_ENTER == g_data_chat[HC05])
+	{
+		//Print messages in both terminals
+		HC05_write(Allignment,my_sizeof(Allignment) - ONE_LENGHT);
+		HC05_write(Term2,my_sizeof(Term2) - ONE_LENGHT);
+		HC05_write(Allignment,my_sizeof(Allignment) - ONE_LENGHT);
+		HC05_write(g_chat_message[HC05].text,g_chat_message[HC05].length);
 
+		UART_PC_write(Allignment0,my_sizeof(Allignment0) - ONE_LENGHT);
+		UART_PC_write(Term2,my_sizeof(Term2) - ONE_LENGHT);
+		UART_PC_write(Allignment0,my_sizeof(Allignment0) - ONE_LENGHT);
+		UART_PC_write(g_chat_message[HC05].text,g_chat_message[HC05].length);
+		g_status_chat[HC05].stage = SUBMENU_OUT;
+		g_chat_message[HC05].length = NOTHING;
+		PC_Chat_Exit();
+	}
+
+	else
+	{
+		if(0 == g_chat_message[HC05].length)
+		{
+			HC05_write(Message,my_sizeof(Message) - ONE_LENGHT);
+		}
+		g_chat_message[HC05].text[g_chat_message[HC05].length] = g_data_chat[HC05];
+		HC05_write(&g_chat_message[HC05].text[g_chat_message[HC05].length],ONE_LENGHT);
+		g_chat_message[HC05].length ++;
+		PC_Chat_Exit();
+	}
 }
 
 void HC05_Chat_Exit(void)
 {
+	//Only if ESC is pressed, exit
+	if(ASCII_ESC == g_data_chat[HC05])
+	{
+		//Once the process ends, the global variables must return to the original value
+		g_status_chat[HC05].stage = MAIN_MENU;
+		g_status_chat[HC05].submenu = NONE;
+		g_t_connected[HC05] = false;
+		if(g_t_connected[PC])
+		{
+			//Print message of terminal disconnected
+			UART_PC_write(Term2Disc,my_sizeof(Term2Disc) - ONE_LENGHT);
+		}
+		g_first_in[HC05] = true;
+	}
 
+	else
+	{
+		//Go back to reading
+		g_status_chat[HC05].stage = SUBMENU;
+	}
 }

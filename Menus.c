@@ -7,11 +7,9 @@
  *      Author: Nelida Hernández
  */
 
-#include "Menus.h"
 #include "MK64F12.h"
 #include "stdbool.h"
 #include "fsl_uart.h"
-#include "Chat.h"
 #include <stdio.h>
 
 #define NOTHING 0U
