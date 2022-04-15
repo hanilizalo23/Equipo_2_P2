@@ -15,7 +15,7 @@
 #include "fsl_debug_console.h"
 #include "I2C.h"
 #include "Bits.h"
-
+  
 #define LED_MATRIX_SLAVE_ADDR	(0x70U)
 #define SUB_ADDR_SIZE			(0x01U)
 #define LED_MATRIX_ADDR			(0x00)
