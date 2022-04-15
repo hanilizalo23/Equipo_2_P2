@@ -36,6 +36,7 @@ uint8_t EEPROM_config(void)
 	return(status);
 }
 
+
 uint8_t EEPROM_write(eeprom_transfer_t transfer)
 {
 	uint8_t status;
@@ -51,4 +52,58 @@ uint8_t EEPROM_read(eeprom_transfer_t transfer)
 	status = I2C_read(EEPROM_ADDRESS,transfer.address,EEPROM_SUBA_SIZE,transfer.data,transfer.dataSize);
 	return(status);
 }
+
+uint8_t Array_to_address(uint8_t *digs_address, uint16_t *real_address)
+{
+	uint8_t status = true;
+	uint8_t cycle_counter = NOTHING;
+	uint16_t real_address_h, real_address_l;
+	//Verify if the first digit is 0
+	if((ASCII_0 != digs_address[0]))
+	{
+		status = false;
+	}
+	//Verify if the second digit is x
+	if((ASCII_X != digs_address[1]) && (ASCII_x_min != digs_address[1]))
+	{
+		status = false;
+	}
+	cycle_counter = 2;
+	while(ADRESS_DIGS_MAX > cycle_counter)
+	{
+		//If it is a number
+		if((ASCII_0 <= digs_address[cycle_counter]) && (ASCII_9 >= digs_address[cycle_counter]))
+		{
+			digs_address[cycle_counter] = digs_address[cycle_counter] - ASCII_0;
+		}
+		//If it is a letter
+		else if((ASCII_A <= digs_address[cycle_counter]) && (ASCII_F >= digs_address[cycle_counter]))
+		{
+			//Adjust the value
+			digs_address[cycle_counter] = digs_address[cycle_counter] - ASCII_A + HEX_LETTERS_OFFSET;
+		}
+		else if((ASCII_a_min <= digs_address[cycle_counter]) && (ASCII_f_min >= digs_address[cycle_counter]))
+		{
+			digs_address[cycle_counter] = digs_address[cycle_counter] - ASCII_a_min + HEX_LETTERS_OFFSET;
+		}
+		else
+		{
+			//Then there is at least one not valid digit
+			status = false;
+		}
+		cycle_counter++;
+	}
+	//Calculate the real address
+	//High part and Low part
+	real_address_h = ((digs_address[2] << ADDRESS_H1_SHIFT) & ADDRESS_H1_MASK) | ((digs_address[3] << ADDRESS_H0_SHIFT) & ADDRESS_H0_MASK);
+	real_address_l = ((digs_address[4] << ADDRESS_L1_SHIFT) & ADDRESS_L1_MASK) | (digs_address[5] & ADDRESS_L0_MASK);
+	*real_address = real_address_h + real_address_l;
+	//If the address exceeds the limit
+	if(EEPROM_MAX_ADDRESS < *real_address)
+	{
+		status = false;
+	}
+	return(status);
 }
+
+
