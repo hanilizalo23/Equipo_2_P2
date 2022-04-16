@@ -27,6 +27,7 @@ static message_t g_chat_message[2];
 static uint8_t g_first_in[2] = {true};
 
 //Strings for messages
+uint8_t Orange1 [] = "\033[38;2;255;82;0;47m";
 uint8_t Chat [] = "\r\nCHAT\r\n";
 uint8_t Message [] = "\r\n       Mensaje: ";
 uint8_t Allignment [] = "\r\n                    ";
@@ -69,6 +70,7 @@ void PC_Chat_Start(void)
 	if(g_t_connected[HC05])
 	{
 		g_status_chat[PC].stage = SUBMENU;
+		UART_PC_write(Orange1,my_sizeof(Orange1) - ONE_LENGHT);
 		UART_PC_write(Term2Con,my_sizeof(Term2Con) - ONE_LENGHT);
 		UART_PC_write(Chat,my_sizeof(Chat) - ONE_LENGHT);
 		g_status_chat[PC].continue_flow = false;
@@ -103,11 +105,13 @@ void PC_Chat_Transmit(void)
 	if(ASCII_ENTER == g_data_chat[PC])
 	{
 		//Print messages in both terminals
+		UART_PC_write(Orange1,my_sizeof(Orange1) - ONE_LENGHT);
 		UART_PC_write(Allignment,my_sizeof(Allignment) - ONE_LENGHT);
 		UART_PC_write(Term1,my_sizeof(Term1) - ONE_LENGHT);
 		UART_PC_write(Allignment,my_sizeof(Allignment) - ONE_LENGHT);
 		UART_PC_write(g_chat_message[PC].text,g_chat_message[PC].length);
 
+		HC05_write(Orange1,my_sizeof(Orange1) - ONE_LENGHT);
 		HC05_write(Allignment0,my_sizeof(Allignment0) - ONE_LENGHT);
 		HC05_write(Term1,my_sizeof(Term1) - ONE_LENGHT);
 		HC05_write(Allignment0,my_sizeof(Allignment0) - ONE_LENGHT);
@@ -124,6 +128,7 @@ void PC_Chat_Transmit(void)
 			UART_PC_write(Message,my_sizeof(Message) - ONE_LENGHT);
 		}
 		g_chat_message[PC].text[g_chat_message[PC].length] = g_data_chat[PC];
+		UART_PC_write(Orange1,my_sizeof(Orange1) - ONE_LENGHT);
 		UART_PC_write(&g_chat_message[PC].text[g_chat_message[PC].length],ONE_LENGHT);
 		g_chat_message[PC].length ++;
 		PC_Chat_Exit();
@@ -143,6 +148,7 @@ void PC_Chat_Exit(void)
 		if(g_t_connected[HC05])
 		{
 			//print "Terminal 1 se desconectó"
+			HC05_write(Orange1,my_sizeof(Orange1) - ONE_LENGHT);
 			HC05_write(Term1Disc,my_sizeof(Term1Disc) - ONE_LENGHT);
 		}
 		g_first_in[PC] = true;
@@ -163,6 +169,7 @@ void HC05_Chat_Start(void)
 	if(g_t_connected[PC])
 	{
 		g_status_chat[HC05].stage = SUBMENU;
+		HC05_write(Orange1,my_sizeof(Orange1) - ONE_LENGHT);
 		HC05_write(Term1Con,my_sizeof(Term1Con) - ONE_LENGHT);
 		HC05_write(Chat,my_sizeof(Chat) - ONE_LENGHT);
 		g_status_chat[HC05].continue_flow = false;
@@ -175,7 +182,9 @@ void HC05_Chat_Start(void)
 		//To only print the messages once
 		if(g_first_in[HC05])
 		{
+			HC05_write(Orange1,my_sizeof(Orange1) - ONE_LENGHT);
 			HC05_write(Term1Disc,my_sizeof(Term1Disc) - ONE_LENGHT);
+			UART_PC_write(Orange1,my_sizeof(Orange1) - ONE_LENGHT);
 			UART_PC_write(TermWaiting,my_sizeof(TermWaiting) - ONE_LENGHT);
 			UART_PC_write(Press_ESC1,my_sizeof(Press_ESC1) - ONE_LENGHT);
 			g_first_in[HC05] = false;
@@ -198,11 +207,13 @@ void HC05_Chat_Transmit(void)
 	if(ASCII_ENTER == g_data_chat[HC05])
 	{
 		//Print messages in both terminals
+		HC05_write(Orange1,my_sizeof(Orange1) - ONE_LENGHT);
 		HC05_write(Allignment,my_sizeof(Allignment) - ONE_LENGHT);
 		HC05_write(Term2,my_sizeof(Term2) - ONE_LENGHT);
 		HC05_write(Allignment,my_sizeof(Allignment) - ONE_LENGHT);
 		HC05_write(g_chat_message[HC05].text,g_chat_message[HC05].length);
 
+		UART_PC_write(Orange1,my_sizeof(Orange1) - ONE_LENGHT);
 		UART_PC_write(Allignment0,my_sizeof(Allignment0) - ONE_LENGHT);
 		UART_PC_write(Term2,my_sizeof(Term2) - ONE_LENGHT);
 		UART_PC_write(Allignment0,my_sizeof(Allignment0) - ONE_LENGHT);
@@ -216,9 +227,11 @@ void HC05_Chat_Transmit(void)
 	{
 		if(0 == g_chat_message[HC05].length)
 		{
+			HC05_write(Orange1,my_sizeof(Orange1) - ONE_LENGHT);
 			HC05_write(Message,my_sizeof(Message) - ONE_LENGHT);
 		}
 		g_chat_message[HC05].text[g_chat_message[HC05].length] = g_data_chat[HC05];
+		HC05_write(Orange1,my_sizeof(Orange1) - ONE_LENGHT);
 		HC05_write(&g_chat_message[HC05].text[g_chat_message[HC05].length],ONE_LENGHT);
 		g_chat_message[HC05].length ++;
 		PC_Chat_Exit();
@@ -237,6 +250,7 @@ void HC05_Chat_Exit(void)
 		if(g_t_connected[PC])
 		{
 			//Print message of terminal disconnected
+			UART_PC_write(Orange1,my_sizeof(Orange1) - ONE_LENGHT);
 			UART_PC_write(Term2Disc,my_sizeof(Term2Disc) - ONE_LENGHT);
 		}
 		g_first_in[HC05] = true;

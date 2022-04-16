@@ -31,6 +31,7 @@ static program_status_t g_actual_status[2] = {{MAIN_MENU, NONE,false},{MAIN_MENU
 static uint8_t read_data[2];
 
 //Strings for messages
+uint8_t Orange0 [] = "\033[38;2;255;82;0;47m"; //Looks weird, but it's Orange0
 uint8_t MainMenu[] = "\r\n1) Establecer Hora\r\n2) Establecer Fecha\r\n3) Leer hora\r\n4) Leer fecha\r\n5) Escribir mensaje en memoria I2C\r\n6) Leer mensaje en memoria I2C\r\n7) Chat\r\n8) Mostrar mensaje en matriz de LEDS\r\n";
 
 uint8_t ConfigureAll(void)
@@ -121,10 +122,12 @@ void Start_Menu(terminal_t terminal)
 {
 	if(PC == terminal)
 	{
+		UART_PC_write(Orange0,my_sizeof(Orange0) - ONE_LENGHT);
 		UART_PC_write(MainMenu,my_sizeof(MainMenu) - ONE_LENGHT);
 	}
 	else
 	{
+		HC05_write(Orange0,my_sizeof(Orange0) - ONE_LENGHT);
 		HC05_write(MainMenu,my_sizeof(MainMenu) - ONE_LENGHT);
 	}
 	g_actual_status[terminal].stage = CHOOSE_OPT;
