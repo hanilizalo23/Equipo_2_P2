@@ -6,7 +6,7 @@
  *  Created on: 14/04/2022
  *      Author: Mauricio Peralta
  */
-
+ 
 #ifndef TIMEDATE_H_
 #define TIMEDATE_H_
 
@@ -30,6 +30,13 @@ program_status_t TimeDate_Choose(terminal_t terminal, program_status_t actual_st
 void SetTime_Start(terminal_t terminal);
 void SetTime_Read(terminal_t terminal);
 void SetTime_Save(terminal_t terminal);
-
+/*!
+ 	 \brief	 This group of functions are the stages of the submenu "Set date".
+ 	 \param[in]  terminal to use.
+ 	 \return void
+ */
+void SetDate_Start(terminal_t terminal);
+void SetDate_Read(terminal_t terminal);
+void SetDate_Save(terminal_t terminal);
 
 #endif /* TIMEDATE_H_ */
