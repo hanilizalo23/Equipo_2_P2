@@ -249,11 +249,74 @@ void SetDate_Save(terminal_t terminal)
 
 //Read Time
 void ReadTime_Start(terminal_t terminal)
-{}
+{
+	if(g_rtc_in_use)
+	{
+		Print_On_Terminal(terminal,I2C_in_use,my_sizeof(I2C_in_use) - ONE_LENGHT);
+		g_status_td[terminal].stage = MAIN_MENU;
+		g_status_td[terminal].submenu = NONE;
+	}
+	else
+	{
+		g_rtc_in_use = true;
+		Print_On_Terminal(terminal,ReadT,my_sizeof(ReadT) - ONE_LENGHT);
+		g_digits_counter_time = NOTHING;
+		g_status_td[terminal].stage = SUBMENU;
+		if(RTC_verify_communication())
+		{
+			Print_On_Terminal(terminal,I2C_Error,my_sizeof(I2C_Error) - ONE_LENGHT);
+			g_status_td[terminal].stage = SUBMENU_OUT;
+		}
+		else
+		{
+			g_actual_terminal = terminal;
+			g_status_td[terminal].continue_flow = true;
+			g_real_time = RTCLOCK_read_time();
+			g_last_time = g_real_time;
+			if(PC == terminal)
+			{
+				UART_PC_print_time(g_real_time);
+			}
+			else
+			{
+				HC05_print_time(g_real_time);
+			}
+			Print_On_Terminal(terminal,Press_ESC,my_sizeof(Press_ESC) - ONE_LENGHT);
+			//Moves the cursor up so it writes on the same place
+			Print_On_Terminal(terminal,Move_Cursor_UP,my_sizeof(Move_Cursor_UP) - ONE_LENGHT);
+			ReadTime_Write(terminal);
+		}
+	}
+}
 
 void ReadTime_Write(terminal_t terminal)
-{}
+{
+	//Read from RTC
+	g_real_time = RTCLOCK_read_time();
+	if(g_last_time.sec != g_real_time.sec)
+	{
+		g_last_time = g_real_time;
+		Print_On_Terminal(terminal,Move_Cursor_FW,my_sizeof(Move_Cursor_FW) - ONE_LENGHT);
+		//Print new time
+		if(PC == terminal)
+		{
+			UART_PC_print_time(g_real_time);
+		}
+		else
+		{
+			HC05_print_time(g_real_time);
+		}
+	}
+	ReadTime_Exit(terminal);
+}
 
 void ReadTime_Exit(terminal_t terminal)
-{}
+{
+}
 
+//Read Date
+
+void ReadDate_Start(terminal_t terminal)
+{
+
+}

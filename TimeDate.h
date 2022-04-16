@@ -46,6 +46,12 @@ void SetDate_Save(terminal_t terminal);
 void ReadTime_Start(terminal_t terminal);
 void ReadTime_Write(terminal_t terminal);
 void ReadTime_Exit(terminal_t terminal);
+/*!
+ 	 \brief	 This group of functions are the stages of the submenu "Read date".
+ 	 \param[in]  terminal to use.
+ 	 \return void
+ */
+void ReadDate_Start(terminal_t terminal);
 
 
 #endif /* TIMEDATE_H_ */
