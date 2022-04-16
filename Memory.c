@@ -6,7 +6,7 @@
  *  Created on: 14/04/2022
  *      Author: Mauricio Peralta
  */
-
+ 
 #include <MEM24LC32A.h>
 #include "Memory.h"
 #include "MK64F12.h"
@@ -38,6 +38,7 @@ static uint8_t g_valid_address;
 static eeprom_transfer_t transference_mem;
 
 //Strings for messages
+uint8_t Orange2 [] = "\033[38;2;255;82;0;47m";
 uint8_t WriteM1	[] = "\r\nDir. de escritura (en hexadecimal con formato 0x0000): ";
 uint8_t WriteM2	[] = "\r\nLongitud en bytes (en decimal, dos dig.): ";
 uint8_t WriteM3	[] = "\r\nTexto a guardar:\r\n";
@@ -52,7 +53,7 @@ uint8_t Press_ESC0 [] = "\r\n\nPresione ESC para salir\r\n";
 uint8_t Mem_Error [] = "\r\nIngrese una dir. de memoria accesible: ";
 uint8_t Mem_Error1 [] = "\r\nIngrese una longitud correcta: ";
 
-uint8_t test_text [] = "\r\nWORKING\r\n";
+//uint8_t test_text [] = "\r\nWORKING\r\n";
 
 //Flags for "I2C device in use"
 static uint8_t g_mem_in_use = false;
@@ -83,6 +84,7 @@ void WriteMem_Start(terminal_t terminal)
 {
 	if(g_mem_in_use)
 	{
+		Print_On_Terminal(terminal,Orange2,my_sizeof(Orange2) - ONE_LENGHT);
 		Print_On_Terminal(terminal,I2C_in_use0,my_sizeof(I2C_in_use0) - ONE_LENGHT);
 		g_status_mem[terminal].stage = MAIN_MENU;
 		g_status_mem[terminal].submenu = NONE;
@@ -91,6 +93,7 @@ void WriteMem_Start(terminal_t terminal)
 	{
 		if(EEPROM_verify_communication())
 		{
+			Print_On_Terminal(terminal,Orange2,my_sizeof(Orange2) - ONE_LENGHT);
 			Print_On_Terminal(terminal,I2C_Error0,my_sizeof(I2C_Error0) - ONE_LENGHT);
 			g_status_mem[terminal].stage = SUBMENU_OUT;
 		}
@@ -99,6 +102,7 @@ void WriteMem_Start(terminal_t terminal)
 			g_mem_counter = ADDRESS;
 			g_mem_in_use = true;
 			//Depending on what must read next, prints a different message
+			Print_On_Terminal(terminal,Orange2,my_sizeof(Orange2) - ONE_LENGHT);
 			Print_On_Terminal(terminal,WriteM1,my_sizeof(WriteM1) - ONE_LENGHT);
 			g_digits_counter = NOTHING;
 			g_status_mem[terminal].stage = SUBMENU;
@@ -107,7 +111,6 @@ void WriteMem_Start(terminal_t terminal)
 }
 void WriteMem_Read(terminal_t terminal)
 {
-
 	switch(g_mem_counter)
 	{
 	case ADDRESS:
@@ -120,10 +123,12 @@ void WriteMem_Read(terminal_t terminal)
 			if(g_valid_address)
 			{
 				g_mem_counter = LENGTH;
+				Print_On_Terminal(terminal,Orange2,my_sizeof(Orange2) - ONE_LENGHT);
 				Print_On_Terminal(terminal,WriteM2,my_sizeof(WriteM2) - ONE_LENGHT);
 			}
 			else
 			{
+				Print_On_Terminal(terminal,Orange2,my_sizeof(Orange2) - ONE_LENGHT);
 				Print_On_Terminal(terminal,Mem_Error,my_sizeof(Mem_Error) - ONE_LENGHT);
 			}
 		}
@@ -131,6 +136,7 @@ void WriteMem_Read(terminal_t terminal)
 		{
 			//Save value on temporal variable
 			g_temp_address[g_digits_counter] = g_data_mem[terminal];
+			Print_On_Terminal(terminal,Orange2,my_sizeof(Orange2) - ONE_LENGHT);
 			Print_On_Terminal(terminal,&g_data_mem[terminal],ONE_LENGHT);
 			g_digits_counter++;
 		}
@@ -146,10 +152,12 @@ void WriteMem_Read(terminal_t terminal)
 			if(g_valid_address)
 			{
 				g_mem_counter = TEXT;
+				Print_On_Terminal(terminal,Orange2,my_sizeof(Orange2) - ONE_LENGHT);
 				Print_On_Terminal(terminal,WriteM3,my_sizeof(WriteM3) - ONE_LENGHT);
 			}
 			else
 			{
+				Print_On_Terminal(terminal,Orange2,my_sizeof(Orange2) - ONE_LENGHT);
 				Print_On_Terminal(terminal,Mem_Error1,my_sizeof(Mem_Error1) - ONE_LENGHT);
 			}
 
@@ -157,6 +165,7 @@ void WriteMem_Read(terminal_t terminal)
 		else if(DATA_SIZE_DIGS > g_digits_counter)
 		{
 			//Save value
+			Print_On_Terminal(terminal,Orange2,my_sizeof(Orange2) - ONE_LENGHT);
 			Print_On_Terminal(terminal,&g_data_mem[terminal],ONE_LENGHT);
 			g_temp_size_mem[g_digits_counter] = g_data_mem[terminal];
 			g_digits_counter++;
@@ -173,6 +182,7 @@ void WriteMem_Read(terminal_t terminal)
 			transference_mem.dataSize = g_real_data_size;
 			transference_mem.data = g_temp_data_mem;
 			EEPROM_write(transference_mem);
+			Print_On_Terminal(terminal,Orange2,my_sizeof(Orange2) - ONE_LENGHT);
 			Print_On_Terminal(terminal,WriteM4,my_sizeof(WriteM4) - ONE_LENGHT);
 			Print_On_Terminal(terminal,Press_ESC0,my_sizeof(Press_ESC0) - ONE_LENGHT);
 		}
@@ -180,6 +190,7 @@ void WriteMem_Read(terminal_t terminal)
 		{
 			//Save text
 			g_temp_data_mem[g_digits_counter] = g_data_mem[terminal];
+			Print_On_Terminal(terminal,Orange2,my_sizeof(Orange2) - ONE_LENGHT);
 			Print_On_Terminal(terminal,&g_data_mem[terminal],ONE_LENGHT);
 			g_digits_counter++;
 		}
@@ -204,6 +215,7 @@ void ReadMem_Start(terminal_t terminal)
 {
 	if(g_mem_in_use)
 	{
+		Print_On_Terminal(terminal,Orange2,my_sizeof(Orange2) - ONE_LENGHT);
 		Print_On_Terminal(terminal,I2C_in_use0,my_sizeof(I2C_in_use0) - ONE_LENGHT);
 		g_status_mem[terminal].stage = MAIN_MENU;
 		g_status_mem[terminal].submenu = NONE;
@@ -212,6 +224,7 @@ void ReadMem_Start(terminal_t terminal)
 	{
 		if(EEPROM_verify_communication())
 		{
+			Print_On_Terminal(terminal,Orange2,my_sizeof(Orange2) - ONE_LENGHT);
 			Print_On_Terminal(terminal,I2C_Error0,my_sizeof(I2C_Error0) - ONE_LENGHT);
 			g_status_mem[terminal].stage = SUBMENU_OUT;
 		}
@@ -220,6 +233,7 @@ void ReadMem_Start(terminal_t terminal)
 			g_mem_counter = ADDRESS;
 			g_mem_in_use = true;
 			//Depending on what must read next, prints a different message
+			Print_On_Terminal(terminal,Orange2,my_sizeof(Orange2) - ONE_LENGHT);
 			Print_On_Terminal(terminal,ReadM1,my_sizeof(ReadM1) - ONE_LENGHT);
 			g_digits_counter = 0;
 			g_status_mem[terminal].stage = SUBMENU;
@@ -241,10 +255,12 @@ void ReadMem_Write(terminal_t terminal)
 				if(g_valid_address)
 				{
 					g_mem_counter = LENGTH;
+					Print_On_Terminal(terminal,Orange2,my_sizeof(Orange2) - ONE_LENGHT);
 					Print_On_Terminal(terminal,ReadM2,my_sizeof(ReadM2) - ONE_LENGHT);
 				}
 				else
 				{
+					Print_On_Terminal(terminal,Orange2,my_sizeof(Orange2) - ONE_LENGHT);
 					Print_On_Terminal(terminal,Mem_Error,my_sizeof(Mem_Error) - ONE_LENGHT);
 				}
 			}
@@ -252,6 +268,7 @@ void ReadMem_Write(terminal_t terminal)
 			{
 				//Save value on temporal variable
 				g_temp_address[g_digits_counter] = g_data_mem[terminal];
+				Print_On_Terminal(terminal,Orange2,my_sizeof(Orange2) - ONE_LENGHT);
 				Print_On_Terminal(terminal,&g_data_mem[terminal],ONE_LENGHT);
 				g_digits_counter++;
 			}
@@ -267,6 +284,7 @@ void ReadMem_Write(terminal_t terminal)
 				if(g_valid_address)
 				{
 					g_mem_counter = TEXT;
+					Print_On_Terminal(terminal,Orange2,my_sizeof(Orange2) - ONE_LENGHT);
 					Print_On_Terminal(terminal,ReadM3,my_sizeof(ReadM3) - ONE_LENGHT);
 					g_status_mem[terminal].stage = SUBMENU_OUT;
 					//Read from memory
@@ -279,6 +297,7 @@ void ReadMem_Write(terminal_t terminal)
 				}
 				else
 				{
+					Print_On_Terminal(terminal,Orange2,my_sizeof(Orange2) - ONE_LENGHT);
 					Print_On_Terminal(terminal,Mem_Error1,my_sizeof(Mem_Error1) - ONE_LENGHT);
 				}
 
@@ -286,6 +305,7 @@ void ReadMem_Write(terminal_t terminal)
 			else if(DATA_SIZE_DIGS > g_digits_counter)
 			{
 				//Save value
+				Print_On_Terminal(terminal,Orange2,my_sizeof(Orange2) - ONE_LENGHT);
 				Print_On_Terminal(terminal,&g_data_mem[terminal],ONE_LENGHT);
 				g_temp_size_mem[g_digits_counter] = g_data_mem[terminal];
 				g_digits_counter++;
@@ -295,7 +315,6 @@ void ReadMem_Write(terminal_t terminal)
 		default:
 			break;
 		}
-
 }
 
 void ReadMem_Exit(terminal_t terminal)
