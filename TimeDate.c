@@ -312,11 +312,33 @@ void ReadTime_Write(terminal_t terminal)
 
 void ReadTime_Exit(terminal_t terminal)
 {
+	//Only if ESC is pressed, exit
+	if(ASCII_ESC == g_data_time[terminal])
+	{
+		//Stop_refresh();
+		g_status_td[terminal].continue_flow = false;
+		//Once the process ends, the global variables must return to the original value
+		g_status_td[terminal].stage = MAIN_MENU;
+		g_status_td[terminal].submenu = NONE;
+		//Free the device
+		g_rtc_in_use = false;
+		Print_On_Terminal(terminal,Move_Cursor_DOWN,my_sizeof(Move_Cursor_DOWN) - ONE_LENGHT);
+	}
+	else
+	{
+		g_status_td[terminal].stage = SUBMENU;
+	}
 }
 
 //Read Date
-
 void ReadDate_Start(terminal_t terminal)
 {
+}
 
+void ReadDate_Write(terminal_t terminal)
+{
+}
+
+void ReadDate_Exit(terminal_t terminal)
+{
 }

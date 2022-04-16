@@ -52,6 +52,7 @@ void ReadTime_Exit(terminal_t terminal);
  	 \return void
  */
 void ReadDate_Start(terminal_t terminal);
-
+void ReadDate_Write(terminal_t terminal);
+void ReadDate_Exit(terminal_t terminal);
 
 #endif /* TIMEDATE_H_ */
