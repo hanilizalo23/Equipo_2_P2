@@ -44,6 +44,7 @@ void SetDate_Save(terminal_t terminal);
  	 \return void
  */
 void ReadTime_Start(terminal_t terminal);
+void ReadTime_Write(terminal_t terminal);
 void ReadTime_Exit(terminal_t terminal);
 
 

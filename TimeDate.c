@@ -195,7 +195,28 @@ void SetDate_Start(terminal_t terminal)
 
 void SetDate_Read(terminal_t terminal)
 {
-
+	uint8_t real_number;
+	//Only writes numbers and colons if they are on the corresponding place
+	if((ASCII_9 >= g_data_time[terminal]) && (ASCII_0 <= g_data_time[terminal]))
+	{
+		Print_On_Terminal(terminal,&g_data_time[terminal],ONE_LENGHT);
+		real_number = g_data_time[terminal] - ASCII_0;
+		//Save on the variable for time
+		g_temp_date[g_date_dig_counter] = real_number;
+		//Increase counters for both reading and store
+		g_digits_counter_time ++;
+		g_date_dig_counter ++;
+	}
+	else if((ASCII_SLASH == g_data_time[terminal]) && ((TWO_DIGITS == g_digits_counter_time) || (FIVE_DIGITS == g_digits_counter_time)))
+	{
+		Print_On_Terminal(terminal,&g_data_time[terminal],ONE_LENGHT);
+		g_digits_counter_time++;
+	}
+	//Verify if the number of digits has reached the limit
+	if(TIME_DIGITS == g_digits_counter_time)
+	{
+		g_status_td[terminal].stage = SUBMENU_OUT;
+	}
 }
 
 void SetDate_Save(terminal_t terminal)
@@ -225,4 +246,14 @@ void SetDate_Save(terminal_t terminal)
 
 	}
 }
+
+//Read Time
+void ReadTime_Start(terminal_t terminal)
+{}
+
+void ReadTime_Write(terminal_t terminal)
+{}
+
+void ReadTime_Exit(terminal_t terminal)
+{}
 
