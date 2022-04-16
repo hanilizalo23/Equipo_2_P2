@@ -6,7 +6,7 @@
  *  Created on: 14/04/2022
  *      Author: Mauricio Peralta
  */
- 
+
 #ifndef TIMEDATE_H_
 #define TIMEDATE_H_
 
@@ -38,5 +38,13 @@ void SetTime_Save(terminal_t terminal);
 void SetDate_Start(terminal_t terminal);
 void SetDate_Read(terminal_t terminal);
 void SetDate_Save(terminal_t terminal);
+/*!
+ 	 \brief	 This group of functions are the stages of the submenu "Read time".
+ 	 \param[in]  terminal to use.
+ 	 \return void
+ */
+void ReadTime_Start(terminal_t terminal);
+void ReadTime_Exit(terminal_t terminal);
+
 
 #endif /* TIMEDATE_H_ */

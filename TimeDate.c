@@ -6,7 +6,7 @@
  *  Created on: 14/04/2022
  *      Author: Mauricio Peralta
  */
- 
+
 #include "TimeDate.h"
 #include "MK64F12.h"
 #include "stdbool.h"
@@ -192,3 +192,37 @@ void SetDate_Start(terminal_t terminal)
 		}
 	}
 }
+
+void SetDate_Read(terminal_t terminal)
+{
+
+}
+
+void SetDate_Save(terminal_t terminal)
+{
+	//Only if ENTER is pressed, save the value
+	if(ASCII_ENTER == g_data_time[terminal])
+	{
+
+		//Transform to time_store_t
+		g_real_date = Array_to_date(g_temp_date);
+		//Save to RTC
+		g_valid = RTCLOCK_write_date(g_real_date);
+		//Free the device
+		g_rtc_in_use = false;
+		if(!g_valid)
+		{
+			Print_On_Terminal(terminal,Date_Error,my_sizeof(Time_Error) - ONE_LENGHT);
+			SetDate_Start(terminal);
+		}
+		else
+		{
+			Print_On_Terminal(terminal,SetD2,my_sizeof(SetD2) - ONE_LENGHT);
+			//Once the process ends, the global variables must return to the original value
+			g_status_td[terminal].stage = MAIN_MENU;
+			g_status_td[terminal].submenu = NONE;
+		}
+
+	}
+}
+
